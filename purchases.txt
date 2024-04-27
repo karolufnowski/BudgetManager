@@ -1,0 +1,10 @@
+100.0
+milk,5.0,Food
+asgd,23.00,Food
+sdf,345.00,Food
+jgjg,56.00,Clothes
+dsafgj,89.00,Clothes
+safk,1.00,Food
+dasgj,90.00,Clothes
+dsggsd,1.00,Other
+daggsdj,7.00,Food

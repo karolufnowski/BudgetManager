@@ -1,0 +1,109 @@
+<h2>Strategy</h2>
+<div class="step-text">
+<p>Imagine the following situation: there are a lot of monstrous conditionals or <a class="theory-lookup" href="/learn/step/16036" rel="noopener noreferrer nofollow" target="_blank" title="In Java, a switch statement is a control flow statement used to evaluate an expression against multiple cases. | It serves as an alternative to long chains of if-else statements, enhancing code readability. A switch statement consists of the keywords switch, case, and default. The general form of a switch statement involves evaluating a given expression against several case constants. If a match is found, the corresponding code block is executed. However, switch statements can be verbose and prone to errors due to strict requirements for placing statements. Java 12 introduced switch expressions as a more concise and less error-prone alternative.">switch statements</a> to select an algorithm for execution. Sometimes you have to add new <a class="theory-lookup" href="/learn/step/30833" rel="noopener noreferrer nofollow" target="_blank" title="In Java, an algorithm is a set of instructions, written in the form of code, to solve a specific problem or perform a particular task. | The Strategy pattern in Java encapsulates a family of algorithms, each in a separate class, making them interchangeable within that family. This allows for easier addition of new algorithms and more concise code. The algorithm executed in different branches are moved into their own class, and a common interface is determined for a family of algorithms, which should contain one or more abstract methods.">algorithms</a> to this already complex structure. Yet another problem is that the code begins to be duplicated in different contexts. How can one make it easier to add new algorithms and write more concise code?</p>
+<p>There is a special pattern named <strong>Strategy</strong>. It's one of the most used patterns in <a class="theory-lookup" href="/learn/step/3615" rel="noopener noreferrer nofollow" target="_blank" title="In Java, object-oriented design is a programming approach that focuses on the design of software using objects, which are instances of a particular class that defines their properties and behaviors. | Each object has its own state, separated from other objects, and they interact with each other to form a typical object-oriented program. The keyword new is used to create an object of a particular class. Object-oriented design emphasizes functionality, making software design more reusable and clean. It is a good practice to rely on interfaces instead of concrete implementations in object-oriented design.">object-oriented design</a>. It defines a family of algorithms, encapsulates each in a separate class and makes them interchangeable within that family.</p>
+<h5 id="introducing-the-strategy-pattern">Introducing the strategy pattern</h5>
+<p>In <strong>Strategy</strong> pattern, algorithms executed in different branches are moved into their own classes called strategies, all of which implement a common interface. Strategies represent behavior, not domain entities.</p>
+<p>The pattern has several advantages:</p>
+<ul><li><p>it allows you to choose an algorithm (behavior) at runtime;</p></li><li><p>it isolates the code of algorithms from the other classes, thus simplifying the addition of new algorithms;</p></li><li><p>it lets the algorithm vary independently from clients that use it.</p></li></ul>
+<p>To use the pattern, you should take the following steps:</p>
+<ol><li><p>Determine the common <code class="language-java">Strategy</code> interface for a family of algorithms. It should contain one or more <a class="theory-lookup" href="/learn/step/11636" rel="noopener noreferrer nofollow" target="_blank" title="In Java, an abstract method is a method that is declared in an abstract class but does not contain an implementation. | It only includes a method signature, return type, and modifiers. The abstract keyword is used to declare an abstract method. Concrete subclasses of the abstract class must provide an implementation for these abstract methods. Since an abstract class cannot be instantiated, the purpose of an abstract method is to provide a common interface for its subclasses. If a class contains an abstract method, the class must be declared abstract as well.">abstract methods</a>.</p></li><li><p>Extract all algorithms into their own classes (concrete strategies). They should follow the <code class="language-java">Strategy</code> interface.</p></li><li><p>Declare a special class called <code class="language-java">Context</code> for storing a reference to a strategy. The <a class="theory-lookup" href="/learn/step/3538" rel="noopener noreferrer nofollow" target="_blank" title="In Java, a context refers to the environment or settings in which certain components or operations operate. | In the case of logging libraries like Logback, each logger has a context which allows enabling or disabling of certain log messages and is responsible for creating logger instances and arranging their hierarchy. In the Java ecosystem, there are many tools for logging, and Logback is a popular logging library that is the successor of the Log4j logging library. It offers fast synchronous and asynchronous logging and includes many useful features. Another use of context in Java is in the JTA specification, which manages transactions. Additionally, there is a common specification related to all tiers called Context and Dependency Injection (CDI), which allows components to inject other components in a safe way and manages the lifecycle and dependency of objects in a Java application.">context</a> delegates execution to an instance of a concrete strategy through its interface, instead of implementing the behavior itself.</p></li></ol>
+<p><strong>Note</strong> that the interface here is not necessarily the interface in java. It can be a simple or an <a class="theory-lookup" href="/learn/step/3597" rel="noopener noreferrer nofollow" target="_blank" title="In Java, an abstract class is a class declared with the keyword abstract that represents an abstract concept and is used as a base class for subclasses. | It can have fields, constructors, and abstract methods, which are declared by adding the keyword abstract and have a declaration (modifier, a return type, and a signature) but don't have an implementation. Each concrete (non-abstract) subclass must implement these abstract methods. An abstract class cannot be instantiated, and its abstract method's implementation is provided by concrete subclasses.">abstract class</a>. The main thing is that it represents an abstract strategy that is inherited by concrete strategies.</p>
+<p>The following diagram illustrates all elements of the pattern and their relations:</p>
+<p style="text-align: center;"><picture><img alt="Strategy pattern" height="328" src="https://ucarecdn.com/4d19108f-6789-4d7c-967a-5be842df103f/" width="652"/></picture></p>
+<p style="text-align: center;"><strong>The Strategy pattern</strong></p>
+<p>The client code should create an instance of <code class="language-java">Context</code>, set a strategy and invoke a special method to start the execution. The invocation will be delegated to a concrete strategy that is referred by the <code class="language-java">strategy</code> field.</p>
+<p>In some cases, the <code class="language-java">execute</code> method of a strategy implements the whole algorithm. In other cases, it implements only a part of the algorithm, and its basic part is in the <code class="language-java">invoke</code> method of <code class="language-java">Context</code>. It may be useful when <code class="language-java">Strategy</code> interface provides several methods which implement independent parts of the general algorithm.</p>
+<p>Perhaps now this pattern looks a bit complicated and abstract, so let's consider a specific example.</p>
+<h5 id="an-example-sending-messages">An example: sending messages</h5>
+<p>Suppose there's an application that needs to send messages to customers. There are different ways to reach out to them: via SMS or e-mail. In addition, new sending methods will be added in future (for instance, push notifications). It would be nice to change the existing code as little as possible when adding new strategies.</p>
+<p>According to the <a class="theory-lookup" href="/learn/step/20188" rel="noopener noreferrer nofollow" target="_blank" title="In Java, the Strategy pattern is a behavioral design pattern that defines a family of algorithms, encapsulates each one, and makes them interchangeable. | It aims to solve the problem of complex conditional statements or switch cases for selecting an algorithm by encapsulating each algorithm in a separate class called Strategy. These strategies represent behavior, not domain entities. The pattern has several advantages, such as allowing the choice of an algorithm (behavior) at runtime, isolating the code of algorithms from other classes, and letting algorithms vary independently from clients that use them.">strategy pattern</a>, we need to define a family of algorithms (sending methods). Each algorithm must encapsulate logic to send a message using a concrete transport (SMS/email).</p>
+<p>Here is our hierarchy of sending methods:</p>
+<pre><code class="language-java">interface SendingMethod {
+
+    void send(String from, String to, String msg);
+}
+
+class SmsSendingMethod implements SendingMethod {
+
+    @Override
+    public void send(String from, String to, String msg) {
+        System.out.println(String.format("send SMS from '%s' to '%s'", from, to));
+    }
+}
+
+class EmailSendingMethod implements SendingMethod {
+
+    @Override
+    public void send(String from, String to, String msg) {
+        System.out.println(String.format("Email from '%s' to '%s'", from, to));
+    }
+}
+</code></pre>
+<p>Our <code class="language-java">Context</code> is <code class="language-java">MessageSender</code> which references a sending method and allows us to change the currently used method:</p>
+<pre><code class="language-java">class MessageSender {
+
+    private SendingMethod method;
+    
+    // it may contain additional fields as well
+
+    public void setMethod(SendingMethod method) {
+        this.method = method;
+    }
+
+    public void send(String from, String to, String msg) {
+        this.method.send(from, to, msg);
+    }
+}</code></pre>
+<p>In the client code, we should create an instance of <code class="language-java">MessageSender</code>, set a sending method and invoke the method <em>send</em> with three string arguments. Also, we can change the sending method to another one.</p>
+<pre><code class="language-java">MessageSender sender = new MessageSender(); // create a message sender
+
+sender.setMethod(new EmailSendingMethod()); // set a concrete sending method
+
+sender.send("alice@gmail.com", "bob@gmail.com", "Hello!");
+
+sender.setMethod(new SmsSendingMethod()); // set another sending method
+
+sender.send("1-541-444-3333", "1-541-555-2222", "Hello!");</code></pre>
+<p>After starting, it outputs:</p>
+<pre><code class="language-java">Email from 'alice@gmail.com' to 'bob@gmail.com'
+send SMS from '1-541-444-3333' to '1-541-555-2222'</code></pre>
+<p>Of course, this example is greatly simplified. In a real application, you'd need to use more complex logic to send messages. But it does a decent job of demonstrating the main idea of the strategy pattern.</p>
+<h5 id="complicating-the-strategy-pattern">Complicating the strategy pattern</h5>
+<p>For different reasons, you will probably meet more complex implementations of the strategy pattern.</p>
+<p><strong>1) Field and constructors.</strong> A concrete strategy may need its own settings stored in fields. Here is a class <code class="language-java">PushSendingMethod</code> with a setting field which we fill in the constructor:</p>
+<pre><code class="language-java">class PushSendingMethod implements SendingMethod {
+    
+    private final boolean magicFlag;
+    
+    public PushSendingMethod(boolean magicFlag) {
+        this.magicFlag = magicFlag;
+    }
+
+    @Override
+    public void send(String from, String to, String msg) {
+        System.out.println(String.format("Send push from '%s' to '%s'", from, to));
+    }
+}</code></pre>
+<p>We can set the value when creating an instance of the method:</p>
+<pre><code class="language-java">sender.setMethod(new PushSendingMethod(true));</code></pre>
+<p><strong>2) Different and unused arguments.</strong> Different strategies may need different arguments or use not all arguments defined in the <a class="theory-lookup" href="/learn/step/3572" rel="noopener noreferrer nofollow" target="_blank" title="In Java, an overridden method is a feature that allows a subclass to inherit a behavior from a superclass and then modify it as needed. | When a method is overridden, the name and parameter of the subclass method must be exactly the same as the superclass method. However, the return type can be the same as the superclass method or a subtype of it. This feature is known as the covariant return type. The benefit of overriding is that a subclass can provide its own specific implementation of a superclass method. This allows a class to inherit from a superclass whose behavior is close enough and then change it in the subclass.">overridden method</a>. In addition, new strategies may need other arguments which will require a change in the entire hierarchy.</p>
+<p>The simplest way to solve the problem is to pass an aggregate type containing the necessary parameters. Each strategy will use only the required fields of the aggregate.</p>
+<p>Here is a rewritten interface<code class="language-java">SendingMethod</code>. The method <em>send</em> takes an instance of Message that contains different fields. Fields are public just for short.</p>
+<pre><code class="language-java">interface SendingMethod {
+
+    void send(Message message);
+}
+
+class Message {
+
+    public String from;
+    public String to;
+    public String title;
+    public String text;
+    public byte[] attachment; // attachment data just like an image or something else
+}</code></pre>
+<p><strong>3) Multiple methods.</strong> A strategy may have multiple methods. For instance, <code class="language-java">PaymentStrategy</code> can contain methods to pay for an order and return the money. It's possible to separate the strategy into two independent ones. But sometimes, it's better to have one strategy with multiple methods.</p>
+<h5 id="conclusion">Conclusion</h5>
+<p>The <strong>Strategy</strong> pattern is useful when we have multiple algorithms for performing a task and we want to choose any of the algorithms at runtime. This pattern is especially good when the number of algorithms increases because it isolates algorithms from the client code. However, this <a class="theory-lookup" href="/learn/step/3580" rel="noopener noreferrer nofollow" target="_blank" title="In Java, a design pattern is a reusable solution to a common problem that occurs in software design. | It provides a general template for how to solve a problem, rather than a specific implementation. The Strategy pattern, for example, is a behavioral design pattern that defines a family of algorithms, encapsulates each one in a separate class, and makes them interchangeable within that family. This allows for easier addition of new algorithms and more concise code, by moving algorithm execution into their own classes. The Command pattern, another behavioral design pattern, decouples the logic between a command and its consumer by encapsulating all the data related to a command in one object.">design pattern</a> complicates the system by adding multiple additional classes.</p>
+</div>

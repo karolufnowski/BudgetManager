@@ -1,0 +1,17 @@
+# course config files
+*.yaml
+
+# gradle
+.gradle/
+build
+
+
+# idea config
+.idea
+
+# old stages
+/Budget Manager/*
+!/Budget Manager/task/
+/Budget Manager/task/*
+!/Budget Manager/task/src
+!/Budget Manager/task/purchases.txt
